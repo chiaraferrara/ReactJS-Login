@@ -1,10 +1,27 @@
 import "./App.css";
 
+import { useNavigate } from "react-router-dom"; //npm i react-router-dom
+
+
+
+
 export function App() {
+  
+  const navigate = useNavigate();
+  
+  const routeChange = () =>{
+  navigate(`/welcome`)
+}
+
   return (
-    <div className="App">
+    <div className="App" style={{width: 18 + 'rem', margin: 'auto'}}>
       <h2>Esegui il Login</h2>
-      <form id="emailForm" name="emailform" action="#">
+      <form id="emailForm" name="emailform" action="#"
+      onSubmit={(e) =>{
+        e.preventDefault();
+        checkEmail(document.emailform.email); 
+        routeChange()
+      }}>
         <input
           type="email"
           className="form-control"
@@ -18,7 +35,8 @@ export function App() {
           className="btn btn-dark"
           type="submit"
           id="submitBtn"
-          onClick={() => checkEmail(document.emailform.email)}
+          action="#"
+          
           disabled>        
           Login
         </button>
@@ -26,6 +44,7 @@ export function App() {
     </div>
   );
 }
+
 
 const checkEmail = (input) => {
   var regex =
@@ -53,4 +72,11 @@ export function Header() {
       Navbar
     </nav>
   );
+
 }
+ export function Welcome(){
+  return (
+    <h1>Welcome!</h1>
+  )
+    
+  }
