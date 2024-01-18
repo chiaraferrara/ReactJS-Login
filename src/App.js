@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
 
-function App() {
+export function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h2>Esegui il Login</h2>
+      <form id="emailForm" name="emailform" action="#">
+        <input
+          type="email"
+          className="form-control"
+          id="inputEmail"
+          name="email"
+          size="30"
+          required
+          onInput={validateEmail} >
+        </input>
+        <button
+          className="btn btn-dark"
+          type="submit"
+          id="submitBtn"
+          onClick={() => checkEmail(document.emailform.email)}
+          disabled>        
+          Login
+        </button>
+      </form>
     </div>
   );
 }
 
-export default App;
+const checkEmail = (input) => {
+  var regex =
+  /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,10})$/;
+  if (input.value.match(regex)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const validateEmail = () => {
+  const submitBtn = document.getElementById("submitBtn");
+  const inputEmail = document.getElementById("inputEmail");
+  const isEmailValid = checkEmail(inputEmail);
+
+  submitBtn.disabled = !isEmailValid;
+};
+
+
+
+export function Header() {
+  return (
+    <nav id="header" className="navbar navbar-expand-lg bg-body-tertiary">
+      Navbar
+    </nav>
+  );
+}
