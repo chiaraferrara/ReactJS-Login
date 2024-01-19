@@ -1,13 +1,22 @@
 import "./App.css";
 
 import { useNavigate } from "react-router-dom"; //npm i react-router-dom
-
+import { useState } from "react";
 
 
 
 export function App() {
   
+  
+  const [email, setEmail] = useState(""); //state
   const navigate = useNavigate();
+
+
+  const saveEmail = () => {
+   localStorage.setItem(`email`, email);
+}
+
+
   
   const routeChange = () =>{
   navigate(`/welcome`)
@@ -20,6 +29,7 @@ export function App() {
       onSubmit={(e) =>{
         e.preventDefault();
         checkEmail(document.emailform.email); 
+        saveEmail() //saveEmail prima di route change per salvare nel local storage
         routeChange()
       }}>
         <input
@@ -29,14 +39,15 @@ export function App() {
           name="email"
           size="30"
           required
-          onInput={validateEmail} >
+          onInput={validateEmail} 
+          // stato della mail aggiorna il valore così
+          onChange={event => setEmail(event.target.value)}>
         </input>
         <button
           className="btn btn-dark"
           type="submit"
           id="submitBtn"
           action="#"
-          
           disabled>        
           Login
         </button>
@@ -66,17 +77,49 @@ const validateEmail = () => {
 
 
 
+
 export function Header() {
+  // const navigate = useNavigate();
+
+  // const routeChange = () =>{
+  //   navigate(`/`)
+  // }
+  const getCurrentEmail = () => {
+    const email = localStorage.getItem('email')
+    return email;
+  }
+  const clearEmail = () => {
+    const mail = getCurrentEmail();
+    
+    localStorage.removeItem('email', mail)
+  }
+  
   return (
     <nav id="header" className="navbar navbar-expand-lg bg-body-tertiary">
-      Navbar
+      <button type="button" class="btn btn-light" onClick={() =>{clearEmail()
+      // routeChange()
+      }}>Logout</button>
     </nav>
   );
 
 }
+
+
  export function Welcome(){
+  const email = localStorage.getItem("email");
   return (
+    <div className="container">
     <h1>Welcome!</h1>
+    {email}</div>
   )
     
   }
+  export function WelcomeBack(){
+    const email = localStorage.getItem("email");
+    return(
+      <div className="container">
+      <h2>Welcome Back!</h2>
+      {email}</div>
+    )
+  
+}
