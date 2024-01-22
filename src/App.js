@@ -7,14 +7,13 @@ import { useState } from 'react';
 
 const users = JSON.parse(localStorage.getItem('users')) || [];
 
-export function LoginForm() {
+export function App() {
   const [email, setEmail] = useState(''); //state
   const navigate = useNavigate();
 
-
   const saveUser = () => {
     localStorage.setItem('users', JSON.stringify(users));
-  }
+  };
 
   const saveUserOnLocalStorage = () => {
     const user = {
@@ -24,7 +23,7 @@ export function LoginForm() {
       counter: 1,
     };
     users.push(user);
-    saveUser()
+    saveUser();
   };
 
   const saveEmail = () => {
@@ -35,38 +34,52 @@ export function LoginForm() {
     navigate(`/welcome`);
   };
 
-  return (
-    <div className="App" style={{ width: 18 + 'rem', margin: 'auto' }}>
-      <h2>Esegui il Login</h2>
-      <form
-        id="emailForm"
-        name="emailform"
-        action="#"
-        onSubmit={e => {
-          e.preventDefault();
-          checkEmail(document.emailform.email);
-          saveUserOnLocalStorage();
-          saveEmail(); //saveEmail prima di route change per salvare nel local storage
-          routeChange();
-        }}
-      >
-        <input
-          type="email"
-          className="form-control"
-          id="inputEmail"
-          name="email"
-          size="30"
-          required
-          onInput={validateEmail}
-          // stato della mail aggiorna il valore così
-          onChange={event => setEmail(event.target.value)}
-        ></input>
-        <button className="btn btn-dark" type="submit" id="submitBtn" action="#" disabled>
-          Login
-        </button>
-      </form>
-    </div>
-  );
+  const isUserLogged = () => {
+    const user = localStorage.getItem('email');
+    if (user) {
+      console.log("C'è qualcuno loggato");
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  if (isUserLogged == true) {
+    return <Welcome />;
+  } else {
+    return (
+      <div className="App" style={{ width: 18 + 'rem', margin: 'auto' }}>
+        <h2>Esegui il Login</h2>
+        <form
+          id="emailForm"
+          name="emailform"
+          action="#"
+          onSubmit={e => {
+            e.preventDefault();
+            checkEmail(document.emailform.email);
+            saveUserOnLocalStorage();
+            saveEmail(); //saveEmail prima di route change per salvare nel local storage
+            routeChange();
+          }}
+        >
+          <input
+            type="email"
+            className="form-control"
+            id="inputEmail"
+            name="email"
+            size="30"
+            required
+            onInput={validateEmail}
+            // stato della mail aggiorna il valore così
+            onChange={event => setEmail(event.target.value)}
+          ></input>
+          <button className="btn btn-dark" type="submit" id="submitBtn" action="#" disabled>
+            Login
+          </button>
+        </form>
+      </div>
+    );
+  }
 }
 
 const checkEmail = input => {
@@ -109,20 +122,43 @@ export function Header() {
 }
 
 export function Welcome() {
+
+  const getLoggedEmail = () => {
+    const loggedEmail = localStorage.getItem('email');
+    console.log(`L'e-mail dell'utente loggato:` + loggedEmail);
+  };
+
+  const getUserLogged = () => {
+    const emailLogged = getLoggedEmail();
+    const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
+    const user = prevUsers.find(user => user.email === emailLogged);
+    return user;
+  };
+
   const email = localStorage.getItem('email');
-  return (
-    <div className="container">
-      <h1>Welcome!</h1>
-      {email}
-    </div>
-  );
-}
-export function WelcomeBack() {
-  const email = localStorage.getItem('email');
-  return (
-    <div className="container">
-      <h2>Welcome Back!</h2>
-      {email}
-    </div>
-  );
+
+  const currentUser = getUserLogged();
+  if (currentUser && currentUser.counter > 1) {
+    return (
+      <div className="container">
+        <h2>Bentornat*</h2>
+        <div>Sei stato qui {currentUser.counter} volte</div>
+      </div>
+    );
+  } else if (currentUser) {
+    return (
+      <div className="container">
+        <h1>Benvenut*</h1>
+        {currentUser.lastLogged}
+        {email}
+      </div>
+    );
+  } else{
+    return (
+      <div className="container">
+        <h1>Benvenut*</h1>
+        {email}
+      </div>
+    );
+  }
 }
