@@ -7,13 +7,25 @@ import { useState } from 'react';
 
 const users = JSON.parse(localStorage.getItem('users')) || [];
 
+
+const getLoggedEmail = () => {
+  const loggedEmail = localStorage.getItem('email');
+  console.log(`L'e-mail dell'utente loggato:` + loggedEmail);
+  return loggedEmail;
+};
+
+const getUserLogged = () => {
+  const emailLogged = getLoggedEmail();
+  const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
+  const user = prevUsers.find(user => user.email === emailLogged);
+  return user;
+};
+
+
 export function App() {
   const [email, setEmail] = useState(''); //state
   const navigate = useNavigate();
 
-  const saveUser = () => {
-    localStorage.setItem('users', JSON.stringify(users));
-  };
 
   const saveUserOnLocalStorage = () => {
     const user = {
@@ -23,13 +35,53 @@ export function App() {
       counter: 1,
     };
     users.push(user);
-    saveUser();
+    localStorage.setItem('users', JSON.stringify(users));
   };
+
 
   const saveEmail = () => {
     localStorage.setItem(`email`, email);
   };
 
+
+  const updateUser = () => {
+
+
+    const prevUsers = JSON.parse(localStorage.getItem("users"));
+    const emailLogged = getLoggedEmail();
+    const newUsers = prevUsers.map((user) => {
+      if (user.email === emailLogged) {
+        return {
+          ...user,
+          previousAccess : user.lastLogged,
+          lastLogged: new Date().toLocaleString(),
+          counter: user.counter + 1,
+        };
+      } else {
+        return {
+          ...user,
+        };
+      }
+    });
+    users.splice(0, users.length, ...newUsers);
+    localStorage.setItem("users", JSON.stringify(newUsers));
+  };
+
+
+
+  const login = () => {
+    const email = getLoggedEmail();
+    const existingUser = getUserLogged();
+
+    if (existingUser != null) {
+      updateUser();
+      
+    } else {
+      saveUserOnLocalStorage();
+    }
+
+
+  }
   const routeChange = () => {
     navigate(`/welcome`);
   };
@@ -57,7 +109,7 @@ export function App() {
           onSubmit={e => {
             e.preventDefault();
             checkEmail(document.emailform.email);
-            saveUserOnLocalStorage();
+            login();
             saveEmail(); //saveEmail prima di route change per salvare nel local storage
             routeChange();
           }}
@@ -123,18 +175,6 @@ export function Header() {
 
 export function Welcome() {
 
-  const getLoggedEmail = () => {
-    const loggedEmail = localStorage.getItem('email');
-    console.log(`L'e-mail dell'utente loggato:` + loggedEmail);
-  };
-
-  const getUserLogged = () => {
-    const emailLogged = getLoggedEmail();
-    const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
-    const user = prevUsers.find(user => user.email === emailLogged);
-    return user;
-  };
-
   const email = localStorage.getItem('email');
 
   const currentUser = getUserLogged();
@@ -149,7 +189,7 @@ export function Welcome() {
     return (
       <div className="container">
         <h1>Benvenut*</h1>
-        {currentUser.lastLogged}
+        {currentUser.lastLogged} <br/>
         {email}
       </div>
     );
