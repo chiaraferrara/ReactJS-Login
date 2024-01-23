@@ -108,7 +108,7 @@ export function App() {
 
   if (isUserLogged()) {
     return <Welcome />;
-  } else {
+  } else if (!isUserLogged()) {
     return (
       <div className="App" style={{ width: 18 + 'rem', margin: 'auto' }}>
         <h2>Esegui il Login</h2>
@@ -187,7 +187,7 @@ export function Welcome() {
   const email = localStorage.getItem('email');
 
   const currentUser = getUserLogged();
-  if (currentUser && currentUser.counter > 1) {
+  if (currentUser.counter > 1) {
     return (
       <div className="container">
         <h2>
@@ -201,11 +201,11 @@ export function Welcome() {
         </div>
       </div>
     );
-  } else if (currentUser) {
+  } else {
     return (
       <div className="container">
         <h1>Benvenut* <br /> {email}</h1>
-        {currentUser.lastLogged} <br />
+        <p>Primo accesso: {currentUser.lastLogged}</p> <br />
       </div>
     );
   }

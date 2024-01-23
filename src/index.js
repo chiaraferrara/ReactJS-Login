@@ -13,8 +13,9 @@ root.render(
    <BrowserRouter>
    <Header/>
       <Routes>        
-        <Route path='/' element={ [<App /> , <Welcome/> ]}/>
-        {/* <Route path = 'welcome' element= { <Welcome/>}/> */}
+        <Route path='/' element={ <App /> }/> 
+        {/* Prima avevo messo un array {[<App/> , <Welcome/>]} per questo motivo vedevo il duplicato di Welcome. */}
+      
       </Routes>
     </BrowserRouter>
   </StrictMode>,
