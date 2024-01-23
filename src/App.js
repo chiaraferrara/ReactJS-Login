@@ -34,6 +34,16 @@ const isUserInLocalStorage = () => {
   return !!user;
 };
 
+const isUserLogged = () => {
+  const user = localStorage.getItem('email');
+  if (user) {
+    console.log("C'è qualcuno loggato: " + getLoggedEmail());
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export function App() {
   const [email, setEmail] = useState(''); //state
   const [users, setUsers] = useState('');
@@ -90,56 +100,53 @@ export function App() {
       updateUser();
     } else {
       saveUserOnLocalStorage();
-    }
+    }  
   };
   const routeChange = () => {
     navigate(`/`);
-  };
-
-  const isUserLogged = () => {
-    const user = localStorage.getItem('email');
-    if (user) {
-      console.log("C'è qualcuno loggato: " + getLoggedEmail());
-      return true;
-    } else {
-      return false;
-    }
   };
 
   if (isUserLogged()) {
     return <Welcome />;
   } else if (!isUserLogged()) {
     return (
-      <div className="App" style={{ width: 18 + 'rem', margin: 'auto' }}>
-        <h2>Esegui il Login</h2>
-        <form
-          id="emailForm"
-          name="emailform"
-          action="#"
-          onSubmit={e => {
-            e.preventDefault();
-            checkEmail(document.emailform.email);
-            saveEmail(); //saveEmail prima di route change per salvare nel local storage ma anche prima di login, così che possa trovare la mail nel local storage ed aggiornare!!!
-            login();
-            routeChange();
-          }}
-        >
-          <input
-            type="email"
-            className="form-control"
-            id="inputEmail"
-            name="email"
-            size="30"
-            required
-            onInput={validateEmail}
-            // stato della mail aggiorna il valore così
-            onChange={event => setEmail(event.target.value)}
-          ></input>
-          <button className="btn btn-dark" type="submit" id="submitBtn" action="#" disabled>
-            Login
-          </button>
-        </form>
-      </div>
+      <>
+        <nav className="navbar bg-dark border-bottom border-body">
+          <a href="https://github.com/chiaraferrara">
+            <button className="btn btn-dark">GitHub</button>
+          </a>
+        </nav>
+        <div className="App" style={{ width: 18 + 'rem', margin: 'auto', marginTop: '20px' }}>
+          <h2>Esegui il Login</h2>
+          <form
+            id="emailForm"
+            name="emailform"
+            action="#"
+            onSubmit={e => {
+              e.preventDefault();
+              checkEmail(document.emailform.email);
+              saveEmail(); //saveEmail prima di route change per salvare nel local storage ma anche prima di login, così che possa trovare la mail nel local storage ed aggiornare!!!
+              login();
+              routeChange();
+            }}
+          >
+            <input
+              type="email"
+              className="form-control"
+              id="inputEmail"
+              name="email"
+              size="30"
+              required
+              onInput={validateEmail}
+              // stato della mail aggiorna il valore così
+              onChange={event => setEmail(event.target.value)}
+            ></input>
+            <button className="btn btn-dark" type="submit" id="submitBtn" action="#" disabled>
+              Login
+            </button>
+          </form>
+        </div>
+      </>
     );
   }
 }
@@ -172,15 +179,10 @@ export function LogoutButton() {
   };
 
   return (
-    <button type="button" className="btn btn-light" onClick={clearEmail}>
+    <button type="button" className="btn btn-dark" onClick={clearEmail}>
       Logout
     </button>
   );
-}
-//Header] is not a <Route> component. All component children of <Routes> must be a <Route> or <React.Fragment>
-//Soluzione:  <BrowserRouter><Header/>
-export function Header() {
-  return <LogoutButton />;
 }
 
 export function Welcome() {
@@ -189,24 +191,36 @@ export function Welcome() {
   const currentUser = getUserLogged();
   if (currentUser.counter > 1) {
     return (
-      <div className="container">
-        <h2>
-          Bentornat* <br /> {email}
-        </h2>
-        <div>
-          Sei stato qui {currentUser.counter} volte
-          <br />
-          <p>Ultimo accesso: {currentUser.previousAccess}</p> <br />
-          <p>Ultimissimo accesso: {currentUser.lastLogged}</p>
+      <>
+        <nav className="navbar bg-dark border-bottom border-body">
+          <LogoutButton />
+        </nav>
+        <div className="container">
+          <h2>
+            Bentornat* <br /> {email}
+          </h2>
+          <div>
+            Sei stato qui {currentUser.counter} volte
+            <br />
+            <p>Ultimo accesso: {currentUser.previousAccess}</p> <br />
+            <p>Ultimissimo accesso: {currentUser.lastLogged}</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   } else {
     return (
-      <div className="container">
-        <h1>Benvenut* <br /> {email}</h1>
-        <p>Primo accesso: {currentUser.lastLogged}</p> <br />
-      </div>
+      <>
+        <nav className="navbar bg-dark border-bottom border-body">
+          <LogoutButton />
+        </nav>
+        <div className="container">
+          <h1>
+            Benvenut* <br /> {email}
+          </h1>
+          <p>Primo accesso: {currentUser.lastLogged}</p> <br />
+        </div>
+      </>
     );
   }
 }
