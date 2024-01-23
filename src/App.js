@@ -100,10 +100,10 @@ export function App() {
       updateUser();
     } else {
       saveUserOnLocalStorage();
-    }  
+    }
   };
   const routeChange = () => {
-    navigate(`/`);
+    navigate(`/ReactJS-Login/`);
   };
 
   if (isUserLogged()) {
@@ -175,7 +175,7 @@ export function LogoutButton() {
   const clearEmail = () => {
     const mail = localStorage.getItem('email');
     localStorage.removeItem('email', mail);
-    navigate('/');
+    navigate('/ReactJS-Login/');
   };
 
   return (

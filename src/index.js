@@ -12,7 +12,7 @@ root.render(
   <StrictMode>
    <BrowserRouter>
       <Routes>        
-        <Route path='/' element={ <App /> }/> 
+        <Route path='/ReactJS-Login/' element={ <App /> }/> 
         {/* Prima avevo messo un array {[<App/> , <Welcome/>]} per questo motivo vedevo il duplicato di Welcome. */}
       
       </Routes>
