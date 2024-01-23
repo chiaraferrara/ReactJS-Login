@@ -13,8 +13,8 @@ root.render(
    <BrowserRouter>
    <Header/>
       <Routes>        
-        <Route path='/' element={ <App />  }/>
-        <Route path = 'welcome' element= { <Welcome/>}/>
+        <Route path='/' element={ [<App /> , <Welcome/> ]}/>
+        {/* <Route path = 'welcome' element= { <Welcome/>}/> */}
       </Routes>
     </BrowserRouter>
   </StrictMode>,

@@ -5,8 +5,7 @@ import './App.css';
 import { useNavigate } from 'react-router-dom'; //npm i react-router-dom
 import { useState } from 'react';
 
-const users = JSON.parse(localStorage.getItem('users')) || [];
-
+// const users = JSON.parse(localStorage.getItem('users')) || [];
 
 const getLoggedEmail = () => {
   const loggedEmail = localStorage.getItem('email');
@@ -16,87 +15,98 @@ const getLoggedEmail = () => {
 
 const getUserLogged = () => {
   const emailLogged = getLoggedEmail();
+  console.log('GetUserLogged by Email:' + emailLogged);
   const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
   const user = prevUsers.find(user => user.email === emailLogged);
   return user;
 };
 
+const isUserInLocalStorage = () => {
+  const email = getLoggedEmail();
+  const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
+
+  console.log('Email loggata:', email);
+
+  console.log('Utenti nel localStorage:', prevUsers);
+  const user = prevUsers.find(user => user.email === email);
+  console.log('Utente trovato:', user);
+
+  return !!user;
+};
 
 export function App() {
   const [email, setEmail] = useState(''); //state
+  const [users, setUsers] = useState('');
+
   const navigate = useNavigate();
 
-
   const saveUserOnLocalStorage = () => {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
     const user = {
       email: email,
       lastLogged: new Date().toLocaleString(),
       previousAccess: null,
       counter: 1,
     };
+    // prevUsers è lo stato precedente,
+    // crea un array dove aggiunge un user alla fine
+    // setUser = hook che aggiorna la variabile users.
+    setUsers(prevUsers => [...prevUsers, user]);
     users.push(user);
     localStorage.setItem('users', JSON.stringify(users));
   };
-
 
   const saveEmail = () => {
     localStorage.setItem(`email`, email);
   };
 
-
   const updateUser = () => {
+    console.log('Updating...');
 
-
-    const prevUsers = JSON.parse(localStorage.getItem("users"));
+    const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
     const emailLogged = getLoggedEmail();
-    const newUsers = prevUsers.map((user) => {
+
+    const newUsers = prevUsers.map(user => {
       if (user.email === emailLogged) {
         return {
           ...user,
-          previousAccess : user.lastLogged,
+          previousAccess: user.lastLogged,
           lastLogged: new Date().toLocaleString(),
           counter: user.counter + 1,
         };
       } else {
-        return {
-          ...user,
-        };
+        return user;
       }
     });
-    users.splice(0, users.length, ...newUsers);
-    localStorage.setItem("users", JSON.stringify(newUsers));
+
+    localStorage.setItem('users', JSON.stringify(newUsers));
+    setUsers(newUsers);
   };
 
-
-
   const login = () => {
-    const email = getLoggedEmail();
-    const existingUser = getUserLogged();
-
-    if (existingUser != null) {
+    const alreadyExist = isUserInLocalStorage();
+    console.log("L'utente esiste già?" + alreadyExist);
+    if (alreadyExist) {
       updateUser();
-      
     } else {
       saveUserOnLocalStorage();
     }
-
-
-  }
+  };
   const routeChange = () => {
-    navigate(`/welcome`);
+    navigate(`/`);
   };
 
   const isUserLogged = () => {
     const user = localStorage.getItem('email');
     if (user) {
-      console.log("C'è qualcuno loggato");
+      console.log("C'è qualcuno loggato: " + getLoggedEmail());
       return true;
     } else {
       return false;
     }
   };
 
-  if (isUserLogged == true) {
+  if (isUserLogged()) {
     return <Welcome />;
   } else {
     return (
@@ -109,8 +119,8 @@ export function App() {
           onSubmit={e => {
             e.preventDefault();
             checkEmail(document.emailform.email);
+            saveEmail(); //saveEmail prima di route change per salvare nel local storage ma anche prima di login, così che possa trovare la mail nel local storage ed aggiornare!!!
             login();
-            saveEmail(); //saveEmail prima di route change per salvare nel local storage
             routeChange();
           }}
         >
@@ -174,30 +184,28 @@ export function Header() {
 }
 
 export function Welcome() {
-
   const email = localStorage.getItem('email');
 
   const currentUser = getUserLogged();
   if (currentUser && currentUser.counter > 1) {
     return (
       <div className="container">
-        <h2>Bentornat*</h2>
-        <div>Sei stato qui {currentUser.counter} volte</div>
+        <h2>
+          Bentornat* <br /> {email}
+        </h2>
+        <div>
+          Sei stato qui {currentUser.counter} volte
+          <br />
+          <p>Ultimo accesso: {currentUser.previousAccess}</p> <br />
+          <p>Ultimissimo accesso: {currentUser.lastLogged}</p>
+        </div>
       </div>
     );
   } else if (currentUser) {
     return (
       <div className="container">
-        <h1>Benvenut*</h1>
-        {currentUser.lastLogged} <br/>
-        {email}
-      </div>
-    );
-  } else{
-    return (
-      <div className="container">
-        <h1>Benvenut*</h1>
-        {email}
+        <h1>Benvenut* <br /> {email}</h1>
+        {currentUser.lastLogged} <br />
       </div>
     );
   }
