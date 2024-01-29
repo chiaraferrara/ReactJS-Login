@@ -4,51 +4,23 @@ import './App.css';
 
 import { useNavigate } from 'react-router-dom'; //npm i react-router-dom
 import { useState } from 'react';
+import { isUserInLocalStorage, utilityGetLoggedEmail, isUserLogged, utilityGetUserLogged, utilitySaveEmailtoCache } from './utility';
 
 // const users = JSON.parse(localStorage.getItem('users')) || [];
 
-const getLoggedEmail = () => {
-  const loggedEmail = localStorage.getItem('email');
-  console.log(`L'e-mail dell'utente loggato:` + loggedEmail);
-  return loggedEmail;
-};
 
-const getUserLogged = () => {
-  const emailLogged = getLoggedEmail();
-  console.log('GetUserLogged by Email:' + emailLogged);
-  const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
-  const user = prevUsers.find(user => user.email === emailLogged);
-  return user;
-};
-
-const isUserInLocalStorage = () => {
-  const email = getLoggedEmail();
-  const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
-
-  console.log('Email loggata:', email);
-
-  console.log('Utenti nel localStorage:', prevUsers);
-  const user = prevUsers.find(user => user.email === email);
-  console.log('Utente trovato:', user);
-
-  return !!user;
-};
-
-const isUserLogged = () => {
-  const user = localStorage.getItem('email');
-  if (user) {
-    console.log("C'è qualcuno loggato: " + getLoggedEmail());
-    return true;
-  } else {
-    return false;
-  }
-};
 
 export function App() {
   const [email, setEmail] = useState(''); //state
   const [users, setUsers] = useState('');
 
   const navigate = useNavigate();
+
+
+  const utilitySaveEmailtoCache = () => {
+    localStorage.setItem(`email`, email);
+  };
+  
 
   const saveUserOnLocalStorage = () => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -65,16 +37,13 @@ export function App() {
     users.push(user);
     localStorage.setItem('users', JSON.stringify(users));
   };
-
-  const saveEmail = () => {
-    localStorage.setItem(`email`, email);
-  };
+  
 
   const updateUser = () => {
     console.log('Updating...');
 
     const prevUsers = JSON.parse(localStorage.getItem('users')) || [];
-    const emailLogged = getLoggedEmail();
+    const emailLogged = utilityGetLoggedEmail();
 
     const newUsers = prevUsers.map(user => {
       if (user.email === emailLogged) {
@@ -88,7 +57,7 @@ export function App() {
         return user;
       }
     });
-
+    //splice?
     localStorage.setItem('users', JSON.stringify(newUsers));
     setUsers(newUsers);
   };
@@ -97,8 +66,10 @@ export function App() {
     const alreadyExist = isUserInLocalStorage();
     console.log("L'utente esiste già?" + alreadyExist);
     if (alreadyExist) {
+      utilitySaveEmailtoCache();
       updateUser();
     } else {
+      utilitySaveEmailtoCache();
       saveUserOnLocalStorage();
     }  
   };
@@ -125,7 +96,7 @@ export function App() {
             onSubmit={e => {
               e.preventDefault();
               checkEmail(document.emailform.email);
-              saveEmail(); //saveEmail prima di route change per salvare nel local storage ma anche prima di login, così che possa trovare la mail nel local storage ed aggiornare!!!
+              utilitySaveEmailtoCache(); //saveEmail prima di route change per salvare nel local storage ma anche prima di login, così che possa trovare la mail nel local storage ed aggiornare!!!
               login();
               routeChange();
             }}
@@ -188,7 +159,7 @@ export function LogoutButton() {
 export function Welcome() {
   const email = localStorage.getItem('email');
 
-  const currentUser = getUserLogged();
+  const currentUser = utilityGetUserLogged();
   if (currentUser.counter > 1) {
     return (
       <>
